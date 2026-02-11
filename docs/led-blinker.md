@@ -6,7 +6,7 @@ permalink: /
 
 This is designed to be an extended introductory F´ tutorial taking the user through the basics of creating components, using events, telemetry, commands, and parameters, and integrating topologies with the goal of running F´ on embedded hardware. Users will be guided through the process of software development and testing on embedded Linux running on an ARM processor (e.g. RaspberryPI, Odroid, etc).
 
-The goal of this tutorial is to build a spacecraft whose mission is to blink an LED.
+The goal of this tutorial is to build a spacecraft whose mission is to blink an LED at a configurable interval, and report status to the ground.
 
 > [!TIP]
 > The source for this tutorial is located here: [https://github.com/fprime-community/fprime-workshop-led-blinker](https://github.com/fprime-community/fprime-workshop-led-blinker). If you are stuck at some point during the tutorial, you may refer to that reference as the "solution".
@@ -105,7 +105,7 @@ fprime-util generate
 
 In this section to the tutorial, you will learn a bit about specifying requirements. Software requirements are derived from higher-level sub-system and system requirements and represent the detail needed to implement the software.
 
-> [!NOTE] Typically these would be done in the Component's Software Specifications Document, or `sdd.md` 
+> [!NOTE] Typically these would be done in the Component's Software Specifications Document, or `sdd.md`
 
 ### Sub-system Requirements
 
@@ -262,7 +262,7 @@ Replace that block with the following:
         )
 ```
 
-> [!NOTE] 
+> [!NOTE]
 > The text following a symbol @ or @< is called an annotation. These annotations are carried through the parsing and become comments in the generated code. For more information, see [The FPP User's Guide](https://nasa.github.io/fpp/fpp-users-guide.html#Writing-Comments-and-Annotations_Annotations)
 
 #### Events
@@ -916,7 +916,7 @@ Add the following code to the `testBlinking` method in `LedBlinker/Components/Le
     ASSERT_TLM_LedTransitions_SIZE(0);  // ensure no LedTransitions were recorded
 ```
 
-The `this->invoke_to_<port-name>()` methods are used to call input ports on the component under test acting like a port invocation in the system topology but driven by our test harness. `run` is an `async` input port, it's not dispatched immediately, but instead added to an execution queue that would normally be driven off the component's thread.  
+The `this->invoke_to_<port-name>()` methods are used to call input ports on the component under test acting like a port invocation in the system topology but driven by our test harness. `run` is an `async` input port, it's not dispatched immediately, but instead added to an execution queue that would normally be driven off the component's thread.
 
 To dispatch a queued port message, unit tests must explicitly call the `doDispatch()` function to dispatch the first message on the queue.
 
@@ -1012,7 +1012,7 @@ Now open the file `LedBlinker/Components/Led/coverage/coverage.html` with your w
 ```shell
 # In LedBlinker/Components/Led/coverage
 open coverage.html
-``` 
+```
 
 ### LED Blinker Step 6 Conclusion
 
@@ -1137,10 +1137,10 @@ Installing the fprime-gds also installs a pytest fixture called `fprime_test_api
 
 First, we'll create a basic test case to verify the system testing library is correctly setup.
 
-Make a directory `int`, which is a convention in flight software development for integration. Then, create the file `led_integration_tests.py` 
+Make a directory `int`, which is a convention in flight software development for integration. Then, create the file `led_integration_tests.py`
 ```shell
 # In Components/Led/test
-mkdir int 
+mkdir int
 touch int/led_integration_tests.py
 ```
 
@@ -1300,6 +1300,22 @@ To verify this, `fprime_test_api.assert_telemetry_count` can be used to wait for
 ## 10. LED Blinker: Conclusion
 
 Congratulations! You have now completed the F´ on-hardware tutorial. You should now have a solid understanding of building an F´ project that runs on hardware!
+
+If you feel inclined, consider how flexible your implementation is in the face of fluid requirements.  For example, adapt to:
+
+### 10a. New requirements
+
+Require separate blinking intervals for ON and OFF.  For example, ON 1
+second, OFF 3 seconds.
+
+### 10b. Changing Requirements
+
+Requirement LED-BLINKER-002 only says to "stop LED blinking" on
+command.  It does not specify whether to also enforce the final LED
+state.  That is, if the LED happens to be ON when blinking is stopped,
+should you leave it ON (for a beacon), or turn it OFF (to save power)?
+Whichever choice your code implemented, clarify the requirement to
+specify the opposite and update your implementation to match.
 
 
 
